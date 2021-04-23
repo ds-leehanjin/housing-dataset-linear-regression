@@ -25,231 +25,17 @@ ___
 
 This analysis focuses on creating a multiple regression model based on housing data from King County, Washington. We will work through an exploratory data analysis to clean the data that we have to prepare it for modeling, as well as working through an iterative approach to refining our model. The goal of this analysis is to create a model which explains how different attributes affect the value of a housing property in King County, and to extract specific variables which we can use to recommend to a homeowner in King County how to increase the value of his/her home. 
 
-# OBTAIN
-
-The data that we will use in this analysis has been provided as a .csv file. We will inspect the data types to determine how to approach the cleansing process.
-
-
-
-
-    <class 'pandas.core.frame.DataFrame'>
-    RangeIndex: 21597 entries, 0 to 21596
-    Data columns (total 21 columns):
-     #   Column         Non-Null Count  Dtype  
-    ---  ------         --------------  -----  
-     0   id             21597 non-null  int64  
-     1   date           21597 non-null  object 
-     2   price          21597 non-null  float64
-     3   bedrooms       21597 non-null  int64  
-     4   bathrooms      21597 non-null  float64
-     5   sqft_living    21597 non-null  int64  
-     6   sqft_lot       21597 non-null  int64  
-     7   floors         21597 non-null  float64
-     8   waterfront     19221 non-null  float64
-     9   view           21534 non-null  float64
-     10  condition      21597 non-null  int64  
-     11  grade          21597 non-null  int64  
-     12  sqft_above     21597 non-null  int64  
-     13  sqft_basement  21597 non-null  object 
-     14  yr_built       21597 non-null  int64  
-     15  yr_renovated   17755 non-null  float64
-     16  zipcode        21597 non-null  int64  
-     17  lat            21597 non-null  float64
-     18  long           21597 non-null  float64
-     19  sqft_living15  21597 non-null  int64  
-     20  sqft_lot15     21597 non-null  int64  
-    dtypes: float64(8), int64(11), object(2)
-    memory usage: 3.5+ MB
-
-
-
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>id</th>
-      <th>date</th>
-      <th>price</th>
-      <th>bedrooms</th>
-      <th>bathrooms</th>
-      <th>sqft_living</th>
-      <th>sqft_lot</th>
-      <th>floors</th>
-      <th>waterfront</th>
-      <th>view</th>
-      <th>...</th>
-      <th>grade</th>
-      <th>sqft_above</th>
-      <th>sqft_basement</th>
-      <th>yr_built</th>
-      <th>yr_renovated</th>
-      <th>zipcode</th>
-      <th>lat</th>
-      <th>long</th>
-      <th>sqft_living15</th>
-      <th>sqft_lot15</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>7129300520</td>
-      <td>10/13/2014</td>
-      <td>221900.0</td>
-      <td>3</td>
-      <td>1.00</td>
-      <td>1180</td>
-      <td>5650</td>
-      <td>1.0</td>
-      <td>NaN</td>
-      <td>0.0</td>
-      <td>...</td>
-      <td>7</td>
-      <td>1180</td>
-      <td>0.0</td>
-      <td>1955</td>
-      <td>0.0</td>
-      <td>98178</td>
-      <td>47.5112</td>
-      <td>-122.257</td>
-      <td>1340</td>
-      <td>5650</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>6414100192</td>
-      <td>12/9/2014</td>
-      <td>538000.0</td>
-      <td>3</td>
-      <td>2.25</td>
-      <td>2570</td>
-      <td>7242</td>
-      <td>2.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>...</td>
-      <td>7</td>
-      <td>2170</td>
-      <td>400.0</td>
-      <td>1951</td>
-      <td>1991.0</td>
-      <td>98125</td>
-      <td>47.7210</td>
-      <td>-122.319</td>
-      <td>1690</td>
-      <td>7639</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>5631500400</td>
-      <td>2/25/2015</td>
-      <td>180000.0</td>
-      <td>2</td>
-      <td>1.00</td>
-      <td>770</td>
-      <td>10000</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>...</td>
-      <td>6</td>
-      <td>770</td>
-      <td>0.0</td>
-      <td>1933</td>
-      <td>NaN</td>
-      <td>98028</td>
-      <td>47.7379</td>
-      <td>-122.233</td>
-      <td>2720</td>
-      <td>8062</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>2487200875</td>
-      <td>12/9/2014</td>
-      <td>604000.0</td>
-      <td>4</td>
-      <td>3.00</td>
-      <td>1960</td>
-      <td>5000</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>...</td>
-      <td>7</td>
-      <td>1050</td>
-      <td>910.0</td>
-      <td>1965</td>
-      <td>0.0</td>
-      <td>98136</td>
-      <td>47.5208</td>
-      <td>-122.393</td>
-      <td>1360</td>
-      <td>5000</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>1954400510</td>
-      <td>2/18/2015</td>
-      <td>510000.0</td>
-      <td>3</td>
-      <td>2.00</td>
-      <td>1680</td>
-      <td>8080</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>...</td>
-      <td>8</td>
-      <td>1680</td>
-      <td>0.0</td>
-      <td>1987</td>
-      <td>0.0</td>
-      <td>98074</td>
-      <td>47.6168</td>
-      <td>-122.045</td>
-      <td>1800</td>
-      <td>7503</td>
-    </tr>
-  </tbody>
-</table>
-<p>5 rows × 21 columns</p>
-</div>
-
-
-
-
-# SCRUB
-
-The data looks clean for the most part, but there are null values in the columns labeled 'waterfront', 'view' and 'yr_renovated' which will be addressed in this section. We also need to make sure to address the two columns that have been stored as object data types labeled 'date' and 'sqft_basement' in addition to checking for duplicated entries. 
-
-## Feature Engineering
-Because those properties that have not been renovated contain a value of 0.0 under their 'yr_renovated' column, this will skew the rest of the data where the other entries that have been renovated will contain a year number. We will engineer a binary feature that indicates whether or not the property has undergone any renovation in order to avoid this skew issue.
-
-
 ## Checking for Correlation and Multicollinearity
 
-We will move on to check for how correlated each column is with our target variable 'price' as well as check for multicollinearity
+The following visualizations help us check for how correlated each column of data is with our target variable 'price' as well as check for multicollinearity
 
 
 
     
 ![png](output_39_0.png)
     
+
+
 
     
 ![png](output_42_0.png)
@@ -269,13 +55,11 @@ From the correlation heatmap, we can see that other than 'sqft_living', we do no
 In this section, we will explore the distributions as well as addressing the issue of outliers in each column. We will also be checking to see how much of a linear relationship each variable has with our target variable 'price'.
 
 
-
 ## Checking for Normality, Outliers, and Linearity
 
 There appear to be some outliers, as in the case of bedrooms where the max number is 33. Although this might be an error in data collection, we will leave the outliers be for now to see how they affect the skew of our data and how our baseline model turns out with what has been provided.
 
 We will proceed to visualize how our data is distributed as well as the linearity of each variable against the price variable.
-
 
     
 ![png](output_51_0.png)
@@ -378,17 +162,12 @@ We will proceed to visualize how our data is distributed as well as the linearit
     
 
 
-## One Hot Encoding
-
-We can see that there are some categorical variables in our dataset, but other than the 'zipcode' column, the other variables are ordinal.
-
-We will proceed to use One Hot Encoding prior to running our multiple regression model including the zipcode data.
-
 # MODEL
 
 Finally, we have prepared our data enough to be able to run an initial iteration of our multiple regression model! As we create each model, we will include a QQ plot to address the normality of residuals as well as plotting price vs residuals in order to check for homoscedasticity of residuals.
 
 ## Creating a Baseline Model
+
 
 <table class="simpletable">
 <caption>OLS Regression Results</caption>
@@ -402,10 +181,10 @@ Finally, we have prepared our data enough to be able to run an initial iteration
   <th>Method:</th>             <td>Least Squares</td>  <th>  F-statistic:       </th>  <td>   1006.</td>  
 </tr>
 <tr>
-  <th>Date:</th>             <td>Fri, 16 Apr 2021</td> <th>  Prob (F-statistic):</th>   <td>  0.00</td>   
+  <th>Date:</th>             <td>Thu, 22 Apr 2021</td> <th>  Prob (F-statistic):</th>   <td>  0.00</td>   
 </tr>
 <tr>
-  <th>Time:</th>                 <td>21:51:04</td>     <th>  Log-Likelihood:    </th> <td>-2.8434e+05</td>
+  <th>Time:</th>                 <td>22:29:30</td>     <th>  Log-Likelihood:    </th> <td>-2.8434e+05</td>
 </tr>
 <tr>
   <th>No. Observations:</th>      <td> 21143</td>      <th>  AIC:               </th>  <td>5.689e+05</td> 
@@ -699,8 +478,6 @@ We will try to address this issue by removing outliers that lie 1.5 times the IQ
 In the 'Explore' section, we saw that we have many outliers several columns. We will proceed to remove outliers from those columns that have extreme outliers, based on our boxplot visualizations.
 
 
-
-
 <table class="simpletable">
 <caption>OLS Regression Results</caption>
 <tr>
@@ -713,10 +490,10 @@ In the 'Explore' section, we saw that we have many outliers several columns. We 
   <th>Method:</th>             <td>Least Squares</td>  <th>  F-statistic:       </th>  <td>   848.1</td>  
 </tr>
 <tr>
-  <th>Date:</th>             <td>Fri, 16 Apr 2021</td> <th>  Prob (F-statistic):</th>   <td>  0.00</td>   
+  <th>Date:</th>             <td>Thu, 22 Apr 2021</td> <th>  Prob (F-statistic):</th>   <td>  0.00</td>   
 </tr>
 <tr>
-  <th>Time:</th>                 <td>21:51:04</td>     <th>  Log-Likelihood:    </th> <td>-2.0856e+05</td>
+  <th>Time:</th>                 <td>22:29:31</td>     <th>  Log-Likelihood:    </th> <td>-2.0856e+05</td>
 </tr>
 <tr>
   <th>No. Observations:</th>      <td> 16358</td>      <th>  AIC:               </th>  <td>4.173e+05</td> 
@@ -1018,10 +795,10 @@ Now we want to move on to addressing the nonsignificant P-values in our model. S
   <th>Method:</th>             <td>Least Squares</td>  <th>  F-statistic:       </th>  <td>   869.8</td>  
 </tr>
 <tr>
-  <th>Date:</th>             <td>Fri, 16 Apr 2021</td> <th>  Prob (F-statistic):</th>   <td>  0.00</td>   
+  <th>Date:</th>             <td>Thu, 22 Apr 2021</td> <th>  Prob (F-statistic):</th>   <td>  0.00</td>   
 </tr>
 <tr>
-  <th>Time:</th>                 <td>21:51:05</td>     <th>  Log-Likelihood:    </th> <td>-2.0856e+05</td>
+  <th>Time:</th>                 <td>22:29:31</td>     <th>  Log-Likelihood:    </th> <td>-2.0856e+05</td>
 </tr>
 <tr>
   <th>No. Observations:</th>      <td> 16358</td>      <th>  AIC:               </th>  <td>4.173e+05</td> 
@@ -1323,10 +1100,10 @@ We should also note that zipcode, as well as some other variables are ones that 
   <th>Method:</th>             <td>Least Squares</td>  <th>  F-statistic:       </th> <td>   869.8</td> 
 </tr>
 <tr>
-  <th>Date:</th>             <td>Fri, 16 Apr 2021</td> <th>  Prob (F-statistic):</th>  <td>  0.00</td>  
+  <th>Date:</th>             <td>Thu, 22 Apr 2021</td> <th>  Prob (F-statistic):</th>  <td>  0.00</td>  
 </tr>
 <tr>
-  <th>Time:</th>                 <td>21:51:06</td>     <th>  Log-Likelihood:    </th> <td> -9777.5</td> 
+  <th>Time:</th>                 <td>22:29:33</td>     <th>  Log-Likelihood:    </th> <td> -9777.5</td> 
 </tr>
 <tr>
   <th>No. Observations:</th>      <td> 16358</td>      <th>  AIC:               </th> <td>1.971e+04</td>
@@ -1611,8 +1388,6 @@ Now that we have a scaled model, we can pick out the variables with the highest 
 
 
 
-
-
 <div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
@@ -1718,19 +1493,19 @@ According to our model, for each foot of living space above ground that is incre
 
 An idea for future analysis would be to explore what costs would be involved in making these renovations, and to determine whether these recommendations would be cost-effective.
 
+### Summary Visualizations
 
-    
-![png](output_85_0.png)
-    
-
-
-
-    
-![png](output_87_0.png)
+![png](output_86_0.png)
     
 
 
     
-![png](output_89_1.png)
+![png](output_88_0.png)
+    
+
+
+
+    
+![png](output_89_0.png)
     
 
